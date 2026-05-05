@@ -1,0 +1,59 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Consultas</h1>
+      <p class="page-subtitle">Relatórios de consultas por paciente ou dentista</p>
+    </div>
+    <a routerLink="/consultations/new" class="btn-primary">+ Nova consulta</a>
+  </div>
+
+  <div class="search-card">
+    <form [formGroup]="searchForm" (ngSubmit)="search()" class="search-form">
+      <select formControlName="filter_type" class="select-type">
+        <option value="patient">Paciente</option>
+        <option value="dentist">Dentista</option>
+      </select>
+      <input type="text" formControlName="filter_id" placeholder="ID (UUID)" class="search-input"/>
+      <button type="submit" class="btn-search" [disabled]="isLoading()">
+        @if (isLoading()) { <span class="spinner"></span> } @else { Buscar }
+      </button>
+    </form>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">⚠ {{ errorMessage() }}</div>
+  }
+
+  @if (searched()) {
+    <div class="table-card">
+      @if (consultations().length === 0 && !isLoading()) {
+        <div class="table-empty">
+          <p>Nenhuma consulta encontrada.</p>
+        </div>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Paciente ID</th>
+              <th>Dentista ID</th>
+              <th>Diagnóstico</th>
+              <th>Tratamento</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of consultations(); track c.id) {
+              <tr>
+                <td>{{ formatDate(c.created_at) }}</td>
+                <td class="cell-id">{{ c.patient_id }}</td>
+                <td class="cell-id">{{ c.dentist_id }}</td>
+                <td class="cell-text">{{ c.diagnosis }}</td>
+                <td class="cell-text">{{ c.treatment }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+</div>

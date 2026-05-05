@@ -1,0 +1,52 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Clínicas</h1>
+      <p class="page-subtitle">Gerencie as unidades do seu tenant</p>
+    </div>
+    <a routerLink="/clinics/new" class="btn-primary">+ Nova clínica</a>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">⚠ {{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading"><div class="spinner"></div></div>
+  } @else {
+    <div class="table-card">
+      @if (clinics().length === 0) {
+        <div class="table-empty">
+          <p>Nenhuma clínica cadastrada.</p>
+          <a routerLink="/clinics/new" class="link">Criar primeira clínica →</a>
+        </div>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Horário</th>
+              <th>Dias</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (clinic of clinics(); track clinic.id) {
+              <tr>
+                <td class="cell-name">{{ clinic.name }}</td>
+                <td>{{ clinic.phone || '-' }}</td>
+                <td>{{ clinic.open_time || '-' }} – {{ clinic.close_time || '-' }}</td>
+                <td>{{ formatDays(clinic.operating_days) }}</td>
+                <td class="cell-actions">
+                  <a [routerLink]="['/clinics', clinic.id, 'edit']" class="btn-edit">Editar</a>
+                  <button class="btn-danger" (click)="remove(clinic.id)">Remover</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+</div>

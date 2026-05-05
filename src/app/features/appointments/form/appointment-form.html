@@ -1,0 +1,66 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Novo agendamento</h1>
+      <p class="page-subtitle">Agende uma consulta para o paciente</p>
+    </div>
+    <a routerLink="/appointments" class="btn-back">← Voltar</a>
+  </div>
+
+  <div class="form-card">
+    @if (errorMessage()) {
+      <div class="error-banner">⚠ {{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="field" [class.field--error]="clinicId?.invalid && clinicId?.touched">
+        <label for="clinic_id">Clínica *</label>
+        <select id="clinic_id" formControlName="clinic_id">
+          <option value="">Selecione uma clínica</option>
+          @for (clinic of clinics(); track clinic.id) {
+            <option [value]="clinic.id">{{ clinic.name }}</option>
+          }
+        </select>
+        <span class="field-error" *ngIf="clinicId?.errors?.['required'] && clinicId?.touched">Clínica é obrigatória</span>
+      </div>
+
+      <div class="field" [class.field--error]="patientId?.invalid && patientId?.touched">
+        <label for="patient_id">ID do paciente *</label>
+        <input id="patient_id" type="text" formControlName="patient_id" placeholder="UUID do paciente"/>
+        <span class="field-error" *ngIf="patientId?.errors?.['required'] && patientId?.touched">Paciente é obrigatório</span>
+      </div>
+
+      <div class="field" [class.field--error]="dentistId?.invalid && dentistId?.touched">
+        <label for="dentist_id">ID do dentista *</label>
+        <input id="dentist_id" type="text" formControlName="dentist_id" placeholder="UUID do dentista"/>
+        <span class="field-error" *ngIf="dentistId?.errors?.['required'] && dentistId?.touched">Dentista é obrigatório</span>
+      </div>
+
+      <div class="field" [class.field--error]="scheduledAt?.invalid && scheduledAt?.touched">
+        <label for="scheduled_at">Data e hora *</label>
+        <input id="scheduled_at" type="datetime-local" formControlName="scheduled_at"/>
+        <span class="field-error" *ngIf="scheduledAt?.errors?.['required'] && scheduledAt?.touched">Data é obrigatória</span>
+      </div>
+
+      <div class="field">
+        <label for="secretary_id">ID da secretária</label>
+        <input id="secretary_id" type="text" formControlName="secretary_id" placeholder="UUID da secretária (opcional)"/>
+      </div>
+
+      <div class="field">
+        <label for="notes">Observações</label>
+        <textarea id="notes" formControlName="notes" placeholder="Observações sobre o agendamento" rows="3"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/appointments" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          <span *ngIf="!isLoading()">Criar agendamento</span>
+          <span *ngIf="isLoading()" class="spinner"></span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

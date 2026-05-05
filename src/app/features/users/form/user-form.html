@@ -1,0 +1,95 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Novo usuário</h1>
+      <p class="page-subtitle">Adicione um membro à sua clínica</p>
+    </div>
+    <a routerLink="/users" class="btn-back">← Voltar</a>
+  </div>
+
+  <div class="form-card">
+    @if (errorMessage()) {
+      <div class="error-banner">⚠ {{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="field" [class.field--error]="fullName?.invalid && fullName?.touched">
+        <label for="full_name">Nome completo *</label>
+        <input id="full_name" type="text" formControlName="full_name" placeholder="Dr. Ana Souza"/>
+        <span class="field-error" *ngIf="fullName?.errors?.['required'] && fullName?.touched">Nome é obrigatório</span>
+      </div>
+
+      <div class="field" [class.field--error]="email?.invalid && email?.touched">
+        <label for="email">E-mail *</label>
+        <input id="email" type="email" formControlName="email" placeholder="usuario@clinica.com"/>
+        <span class="field-error" *ngIf="email?.errors?.['required'] && email?.touched">E-mail é obrigatório</span>
+        <span class="field-error" *ngIf="email?.errors?.['email'] && email?.touched">E-mail inválido</span>
+      </div>
+
+      <div class="field" [class.field--error]="password?.invalid && password?.touched">
+        <label for="password">Senha *</label>
+        <div class="input-password-wrap">
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres"/>
+          <button type="button" class="toggle-pw" (click)="togglePassword()">
+            <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <span class="field-error" *ngIf="password?.errors?.['required'] && password?.touched">Senha é obrigatória</span>
+        <span class="field-error" *ngIf="password?.errors?.['minlength'] && password?.touched">Mínimo 8 caracteres</span>
+      </div>
+
+      <div class="field" [class.field--error]="role?.invalid && role?.touched">
+        <label for="role">Papel *</label>
+        <select id="role" formControlName="role">
+          <option value="">Selecione um papel</option>
+          <option value="admin">Admin</option>
+          <option value="dentist">Dentista</option>
+          <option value="secretary">Secretária</option>
+          <option value="patient">Paciente</option>
+        </select>
+        <span class="field-error" *ngIf="role?.errors?.['required'] && role?.touched">Papel é obrigatório</span>
+      </div>
+
+      <div class="fields-row">
+        <div class="field">
+          <label for="phone">Telefone</label>
+          <input id="phone" type="tel" formControlName="phone" placeholder="(11) 99999-9999"/>
+        </div>
+        <div class="field">
+          <label for="document">CPF / Documento</label>
+          <input id="document" type="text" formControlName="document" placeholder="000.000.000-00"/>
+        </div>
+      </div>
+
+      <div class="field checkbox-field">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="has_whatsapp"/>
+          <span class="checkmark"></span>
+          <span class="checkbox-text">Possui WhatsApp</span>
+        </label>
+      </div>
+
+      <div class="fields-row">
+        <div class="field">
+          <label for="emergency_contact_name">Contato de emergência</label>
+          <input id="emergency_contact_name" type="text" formControlName="emergency_contact_name" placeholder="Nome do contato"/>
+        </div>
+        <div class="field">
+          <label for="emergency_contact_phone">Telefone de emergência</label>
+          <input id="emergency_contact_phone" type="tel" formControlName="emergency_contact_phone" placeholder="(11) 99999-9999"/>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/users" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          <span *ngIf="!isLoading()">Criar usuário</span>
+          <span *ngIf="isLoading()" class="spinner"></span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

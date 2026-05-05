@@ -1,0 +1,51 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Nova consulta</h1>
+      <p class="page-subtitle">Registre o relatório da consulta</p>
+    </div>
+    <a routerLink="/consultations" class="btn-back">← Voltar</a>
+  </div>
+
+  <div class="form-card">
+    @if (errorMessage()) {
+      <div class="error-banner">⚠ {{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="field" [class.field--error]="appointmentId?.invalid && appointmentId?.touched">
+        <label for="appointment_id">ID do agendamento *</label>
+        <input id="appointment_id" type="text" formControlName="appointment_id" placeholder="UUID do agendamento"/>
+        <span class="field-error" *ngIf="appointmentId?.errors?.['required'] && appointmentId?.touched">Agendamento é obrigatório</span>
+      </div>
+
+      <div class="field" [class.field--error]="patientId?.invalid && patientId?.touched">
+        <label for="patient_id">ID do paciente *</label>
+        <input id="patient_id" type="text" formControlName="patient_id" placeholder="UUID do paciente"/>
+        <span class="field-error" *ngIf="patientId?.errors?.['required'] && patientId?.touched">Paciente é obrigatório</span>
+      </div>
+
+      <div class="field" [class.field--error]="diagnosis?.invalid && diagnosis?.touched">
+        <label for="diagnosis">Diagnóstico *</label>
+        <textarea id="diagnosis" formControlName="diagnosis" placeholder="Descreva o diagnóstico..." rows="4"></textarea>
+        <span class="field-error" *ngIf="diagnosis?.errors?.['required'] && diagnosis?.touched">Diagnóstico é obrigatório</span>
+      </div>
+
+      <div class="field" [class.field--error]="treatment?.invalid && treatment?.touched">
+        <label for="treatment">Tratamento *</label>
+        <textarea id="treatment" formControlName="treatment" placeholder="Descreva o tratamento prescrito..." rows="4"></textarea>
+        <span class="field-error" *ngIf="treatment?.errors?.['required'] && treatment?.touched">Tratamento é obrigatório</span>
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/consultations" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          <span *ngIf="!isLoading()">Registrar consulta</span>
+          <span *ngIf="isLoading()" class="spinner"></span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Agendamentos</h1>
+      <p class="page-subtitle">Busque por ID do paciente</p>
+    </div>
+    <a routerLink="/appointments/new" class="btn-primary">+ Novo agendamento</a>
+  </div>
+
+  <div class="search-card">
+    <form [formGroup]="searchForm" (ngSubmit)="search()" class="search-form">
+      <input type="text" formControlName="patient_id" placeholder="ID do paciente (UUID)" class="search-input"/>
+      <button type="submit" class="btn-search" [disabled]="isLoading()">
+        @if (isLoading()) { <span class="spinner"></span> } @else { Buscar }
+      </button>
+    </form>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">⚠ {{ errorMessage() }}</div>
+  }
+
+  @if (searched()) {
+    <div class="table-card">
+      @if (appointments().length === 0 && !isLoading()) {
+        <div class="table-empty">
+          <p>Nenhum agendamento encontrado para este paciente.</p>
+        </div>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Data / Hora</th>
+              <th>Dentista</th>
+              <th>Clínica</th>
+              <th>Status</th>
+              <th>Notas</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (apt of appointments(); track apt.id) {
+              <tr>
+                <td>{{ formatDate(apt.scheduled_at) }}</td>
+                <td class="cell-id">{{ apt.dentist_id }}</td>
+                <td class="cell-id">{{ apt.clinic_id }}</td>
+                <td>
+                  <span class="badge" [class]="statusClass(apt.status)">{{ apt.status || 'agendado' }}</span>
+                </td>
+                <td>{{ apt.notes || '-' }}</td>
+                <td class="cell-actions">
+                  @if (apt.status !== 'canceled') {
+                    <button class="btn-danger" (click)="cancel(apt.id)">Cancelar</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+</div>

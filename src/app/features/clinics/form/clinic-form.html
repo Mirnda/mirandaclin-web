@@ -1,0 +1,124 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ isEdit() ? 'Editar clínica' : 'Nova clínica' }}</h1>
+      <p class="page-subtitle">{{ isEdit() ? 'Atualize os dados da clínica' : 'Cadastre uma nova unidade' }}</p>
+    </div>
+    <a routerLink="/clinics" class="btn-back">← Voltar</a>
+  </div>
+
+  <div class="form-card">
+    @if (errorMessage()) {
+    <div class="error-banner">⚠ {{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="field" [class.field--error]="name?.invalid && name?.touched">
+        <label for="name">Nome da clínica *</label>
+        <input id="name" type="text" formControlName="name" placeholder="Clínica Odonto Plus" />
+        <span class="field-error" *ngIf="name?.errors?.['required'] && name?.touched">Nome é obrigatório</span>
+      </div>
+
+      <div class="field">
+        <label for="phone">Telefone</label>
+        <input id="phone" type="tel" formControlName="phone" placeholder="(11) 99999-9999" />
+      </div>
+
+      <div class="fields-row">
+        <div class="field">
+          <label for="open_time">Abertura</label>
+          <input id="open_time" type="time" formControlName="open_time" />
+        </div>
+        <div class="field">
+          <label for="close_time">Fechamento</label>
+          <input id="close_time" type="time" formControlName="close_time" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Dias de funcionamento</label>
+        <div class="days-grid">
+          @for (day of weekdays; track day.value) {
+          <button type="button" class="day-btn" [class.day-btn--active]="isDaySelected(day.value)"
+            (click)="toggleDay(day.value)">
+            {{ day.label }}
+          </button>
+          }
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <span class="section-label">Endereço</span>
+      </div>
+
+      <div formGroupName="address">
+        <div class="fields-row fields-row--3-1">
+          <div class="field">
+            <label for="postal_code">CEP</label>
+            <input id="postal_code" type="text" formControlName="postal_code" placeholder="01310-100" maxlength="9"
+              (input)="formatCep($event)" (blur)="lookupCep()" />
+            @if (isCepLoading()) {
+            <span class="field-hint">Buscando endereço...</span>
+            }
+          </div>
+          <div class="field">
+            <label for="country">País</label>
+            <input id="country" type="text" formControlName="country" placeholder="Brasil" />
+          </div>
+        </div>
+
+        <div class="fields-row fields-row--3-1">
+          <div class="field">
+            <label for="street">Logradouro</label>
+            <input id="street" type="text" formControlName="street" placeholder="Rua das Flores" />
+          </div>
+          <div class="field">
+            <label for="number">Número</label>
+            <input id="number" type="text" formControlName="number" placeholder="123" />
+          </div>
+        </div>
+
+        <div class="fields-row">
+          <div class="field">
+            <label for="complement">Complemento</label>
+            <input id="complement" type="text" formControlName="complement" placeholder="Sala 10" />
+          </div>
+          <div class="field">
+            <label for="neighborhood">Bairro</label>
+            <input id="neighborhood" type="text" formControlName="neighborhood" placeholder="Centro" />
+          </div>
+        </div>
+
+        <div class="fields-row">
+          <div class="field" [class.field--error]="city?.invalid && city?.touched">
+            <label for="city">Cidade *</label>
+            <input id="city" type="text" formControlName="city" placeholder="São Paulo" />
+            <span class="field-error" *ngIf="city?.errors?.['required'] && city?.touched">Cidade é obrigatória</span>
+          </div>
+          <div class="field" [class.field--error]="state?.invalid && state?.touched">
+            <label for="state">Estado *</label>
+            <input id="state" type="text" formControlName="state" placeholder="SP" list="brazil-states" maxlength="2"
+              class="input-uppercase" />
+            <datalist id="brazil-states">
+              @for (s of brazilStates; track s) {
+              <option [value]="s">{{ s }}</option>
+              }
+            </datalist>
+            <span class="field-error" *ngIf="state?.errors?.['required'] && state?.touched">Estado é obrigatório</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/clinics" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          <span *ngIf="!isLoading()">{{ isEdit() ? 'Salvar alterações' : 'Criar clínica' }}</span>
+          <span *ngIf="isLoading()" class="spinner"></span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

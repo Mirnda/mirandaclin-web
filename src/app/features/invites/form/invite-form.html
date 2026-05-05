@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Convidar membro</h1>
+      <p class="page-subtitle">Envie um convite por e-mail para sua equipe</p>
+    </div>
+    <a routerLink="/dashboard" class="btn-back">← Dashboard</a>
+  </div>
+
+  <div class="form-card">
+    @if (errorMessage()) {
+      <div class="error-banner">⚠ {{ errorMessage() }}</div>
+    }
+    @if (successMessage()) {
+      <div class="success-banner">✓ {{ successMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="field" [class.field--error]="email?.invalid && email?.touched">
+        <label for="email">E-mail do convidado *</label>
+        <input id="email" type="email" formControlName="email" placeholder="dentista@clinica.com"/>
+        <span class="field-error" *ngIf="email?.errors?.['required'] && email?.touched">E-mail é obrigatório</span>
+        <span class="field-error" *ngIf="email?.errors?.['email'] && email?.touched">E-mail inválido</span>
+      </div>
+
+      <div class="field" [class.field--error]="password?.invalid && password?.touched">
+        <label for="password">Senha inicial *</label>
+        <div class="input-password-wrap">
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres"/>
+          <button type="button" class="toggle-pw" (click)="togglePassword()">
+            <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <span class="field-error" *ngIf="password?.errors?.['required'] && password?.touched">Senha é obrigatória</span>
+        <span class="field-error" *ngIf="password?.errors?.['minlength'] && password?.touched">Mínimo 8 caracteres</span>
+      </div>
+
+      <div class="field" [class.field--error]="role?.invalid && role?.touched">
+        <label for="role">Papel no sistema *</label>
+        <select id="role" formControlName="role">
+          <option value="">Selecione o papel</option>
+          <option value="admin">Admin</option>
+          <option value="dentist">Dentista</option>
+          <option value="secretary">Secretária</option>
+          <option value="patient">Paciente</option>
+        </select>
+        <span class="field-error" *ngIf="role?.errors?.['required'] && role?.touched">Papel é obrigatório</span>
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/dashboard" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          <span *ngIf="!isLoading()">Enviar convite</span>
+          <span *ngIf="isLoading()" class="spinner"></span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

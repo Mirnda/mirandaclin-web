@@ -1,0 +1,114 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Usuários</h1>
+      <p class="page-subtitle">Gerencie os usuários do seu tenant</p>
+    </div>
+    <a routerLink="/users/new" class="btn-primary">+ Novo usuário</a>
+  </div>
+
+  <div class="search-card">
+    <form [formGroup]="searchForm" (ngSubmit)="search()" class="search-form">
+      <input type="text" formControlName="user_id" placeholder="Buscar por ID do usuário (UUID)" class="search-input" />
+      <button type="submit" class="btn-search" [disabled]="isLoading()">
+        @if (isLoading()) { <span class="spinner"></span> } @else { Buscar }
+      </button>
+    </form>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">⚠ {{ errorMessage() }}</div>
+  }
+
+  @if (searched() && !isLoading()) {
+    @if (user()) {
+      <div class="user-card">
+        <div class="user-header">
+          <div class="user-avatar">{{ user()!.full_name.charAt(0).toUpperCase() }}</div>
+          <div>
+            <h2 class="user-name">{{ user()!.full_name }}</h2>
+            <p class="user-email">{{ user()!.email }}</p>
+          </div>
+        </div>
+        <div class="user-details">
+          <div class="detail-item">
+            <span class="detail-label">Telefone</span>
+            <span class="detail-value">{{ user()!.phone || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">WhatsApp</span>
+            <span class="detail-value">{{ user()!.has_whatsapp ? 'Sim' : 'Não' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Documento</span>
+            <span class="detail-value">{{ user()!.document || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">E-mail verificado</span>
+            <span class="detail-value">{{ user()!.email_verified_at ? formatDate(user()!.email_verified_at) : 'Pendente' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Contato emergência</span>
+            <span class="detail-value">{{ user()!.emergency_contact_name || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Cadastrado em</span>
+            <span class="detail-value">{{ formatDate(user()!.created_at) }}</span>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="table-card">
+        <div class="table-empty">
+          <p>Usuário não encontrado.</p>
+        </div>
+      </div>
+    }
+  }
+
+  <div class="section-title">Todos os usuários</div>
+
+  @if (isLoadingList()) {
+    <div class="table-card">
+      <div class="table-empty">
+        <span class="spinner spinner--dark"></span>
+      </div>
+    </div>
+  } @else if (users().length === 0) {
+    <div class="table-card">
+      <div class="table-empty">
+        <p>Nenhum usuário cadastrado.</p>
+      </div>
+    </div>
+  } @else {
+    <div class="table-card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>Documento</th>
+            <th>Cadastrado em</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users(); track u.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="cell-avatar">{{ u.full_name.charAt(0).toUpperCase() }}</div>
+                  <span>{{ u.full_name }}</span>
+                </div>
+              </td>
+              <td class="cell-muted">{{ u.email }}</td>
+              <td class="cell-muted">{{ u.phone || '-' }}</td>
+              <td class="cell-muted">{{ u.document || '-' }}</td>
+              <td class="cell-muted">{{ formatDate(u.created_at) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
