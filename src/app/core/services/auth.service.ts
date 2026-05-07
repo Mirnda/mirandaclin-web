@@ -66,6 +66,25 @@ export class AuthService {
     });
   }
 
+  refresh(): Observable<ApiResponse<Record<string, string>>> {
+    return this.http
+      .post<ApiResponse<Record<string, string>>>(
+        `${this.base}/v1/api/auth/refresh`,
+        {},
+        { withCredentials: true }
+      )
+      .pipe(
+        switchMap(res => {
+          const token = res.data?.['token'];
+          if (token) {
+            localStorage.setItem('token', token);
+            this._token.set(token);
+          }
+          return [res];
+        })
+      );
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     this._token.set(null);

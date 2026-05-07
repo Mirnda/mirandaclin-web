@@ -57,10 +57,19 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'patients',
+        children: [
+          { path: '', loadComponent: () => import('./features/patients/list/patient-list').then(m => m.PatientListComponent) },
+          { path: 'new', loadComponent: () => import('./features/patients/form/patient-form').then(m => m.PatientFormComponent) },
+          { path: ':id/edit', loadComponent: () => import('./features/patients/form/patient-form').then(m => m.PatientFormComponent) },
+        ],
+      },
+      {
         path: 'users',
         children: [
           { path: '', loadComponent: () => import('./features/users/list/user-list').then(m => m.UserListComponent) },
-          { path: 'new', loadComponent: () => import('./features/users/form/user-form').then(m => m.UserFormComponent) },
+          { path: 'new', loadComponent: () => import('./features/invites/form/invite-form').then(m => m.InviteFormComponent) },
+          { path: ':id/edit', loadComponent: () => import('./features/users/form/user-form').then(m => m.UserFormComponent) },
         ],
       },
       {

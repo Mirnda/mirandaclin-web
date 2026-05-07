@@ -1,8 +1,8 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <h1 class="page-title">Novo usuário</h1>
-      <p class="page-subtitle">Adicione um membro à sua clínica</p>
+      <h1 class="page-title">{{ isEditMode() ? 'Editar usuário' : 'Novo usuário' }}</h1>
+      <p class="page-subtitle">{{ isEditMode() ? 'Atualize os dados do membro' : 'Adicione um membro à sua clínica' }}</p>
     </div>
     <a routerLink="/users" class="btn-back">← Voltar</a>
   </div>
@@ -85,7 +85,7 @@
       <div class="form-actions">
         <a routerLink="/users" class="btn-secondary">Cancelar</a>
         <button type="submit" class="btn-primary" [disabled]="isLoading()">
-          <span *ngIf="!isLoading()">Criar usuário</span>
+          <span *ngIf="!isLoading()">{{ isEditMode() ? 'Salvar alterações' : 'Criar usuário' }}</span>
           <span *ngIf="isLoading()" class="spinner"></span>
         </button>
       </div>

@@ -6,23 +6,68 @@
       </svg>
     </div>
 
-    @if (!success) {
+    @if (tokenMissing) {
+      <div class="state state--error">
+        <div class="state-icon state-icon--error">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </div>
+        <h2 class="state-title">Link inválido</h2>
+        <p class="state-text">Este link de convite não contém um token válido.</p>
+        <a routerLink="/login" class="btn-secondary">Voltar ao login</a>
+      </div>
+    }
+
+    @if (!tokenMissing) {
       <div class="card-header">
-        <h1 class="form-title">Aceitar convite</h1>
-        <p class="form-subtitle">Cole o token recebido por e-mail</p>
+        <h1 class="form-title">Criar senha</h1>
+        <p class="form-subtitle">Defina sua senha para acessar o sistema</p>
       </div>
 
-      <div class="error-banner" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
-
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <div class="field" [class.field--error]="token?.invalid && token?.touched">
-          <label for="token">Token do convite</label>
-          <input id="token" type="text" formControlName="token" placeholder="Cole o token aqui"/>
-          <span class="field-error" *ngIf="token?.errors?.['required'] && token?.touched">Token é obrigatório</span>
+
+        <div class="field" [class.field--error]="password?.invalid && password?.touched">
+          <label for="password">Senha *</label>
+          <div class="input-password-wrap">
+            <input id="password" [type]="showPassword ? 'text' : 'password'"
+              formControlName="password" placeholder="Mínimo 8 caracteres"/>
+            <button type="button" class="toggle-pw" (click)="togglePassword()">
+              <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="password?.errors?.['required'] && password?.touched">Senha é obrigatória</span>
+          <span class="field-error" *ngIf="password?.errors?.['minlength'] && password?.touched">Mínimo 8 caracteres</span>
+        </div>
+
+        <div class="field"
+          [class.field--error]="(confirmPassword?.invalid && confirmPassword?.touched) || (form.errors?.['mismatch'] && confirmPassword?.touched)">
+          <label for="confirmPassword">Confirmar senha *</label>
+          <div class="input-password-wrap">
+            <input id="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="confirmPassword" placeholder="Repita a senha"/>
+            <button type="button" class="toggle-pw" (click)="toggleConfirmPassword()">
+              <svg *ngIf="!showConfirmPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showConfirmPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="confirmPassword?.errors?.['required'] && confirmPassword?.touched">Confirme a senha</span>
+          <span class="field-error" *ngIf="form.errors?.['mismatch'] && confirmPassword?.touched">As senhas não coincidem</span>
         </div>
 
         <button type="submit" class="btn-primary" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Aceitar convite ↗</span>
+          <span *ngIf="!isLoading">Criar conta ↗</span>
           <span *ngIf="isLoading" class="spinner"></span>
         </button>
       </form>
@@ -30,18 +75,6 @@
       <p class="form-footer">
         Já tem conta? <a routerLink="/login" class="link">Entrar →</a>
       </p>
-    }
-
-    @if (success) {
-      <div class="state state--success">
-        <div class="state-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-          </svg>
-        </div>
-        <h2 class="state-title">Conta criada!</h2>
-        <p class="state-text">Redirecionando para o login...</p>
-      </div>
     }
   </div>
 </div>

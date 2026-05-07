@@ -7,6 +7,25 @@ export interface User {
   full_name: string;
   email: string;
   email_verified_at: string;
+  role?: UserRole;
+  phone: string;
+  has_whatsapp: boolean;
+  document: string;
+  birth_date: string;
+  emergency_contact_name: string;
+  emergency_contact_phone: string;
+  address: Address;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserWithProfile {
+  id: string;
+  tenant_id: string;
+  full_name: string;
+  email: string;
+  email_verified_at: string;
+  role: string;
   phone: string;
   has_whatsapp: boolean;
   document: string;
@@ -30,6 +49,7 @@ export interface LoginRequest {
   email: string;
   password: string;
   tenant_id?: string;
+  keep_alive?: boolean;
 }
 
 export interface RegisterRequest {
@@ -58,4 +78,5 @@ export interface CreateUserRequest {
 
 export interface AcceptInviteRequest {
   token: string;
+  password: string;
 }

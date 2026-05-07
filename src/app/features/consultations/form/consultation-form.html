@@ -14,28 +14,42 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
-      <div class="field" [class.field--error]="appointmentId?.invalid && appointmentId?.touched">
-        <label for="appointment_id">ID do agendamento *</label>
-        <input id="appointment_id" type="text" formControlName="appointment_id" placeholder="UUID do agendamento"/>
-        <span class="field-error" *ngIf="appointmentId?.errors?.['required'] && appointmentId?.touched">Agendamento é obrigatório</span>
-      </div>
-
       <div class="field" [class.field--error]="patientId?.invalid && patientId?.touched">
-        <label for="patient_id">ID do paciente *</label>
-        <input id="patient_id" type="text" formControlName="patient_id" placeholder="UUID do paciente"/>
+        <label for="patient_id">Paciente *</label>
+        <select id="patient_id" formControlName="patient_id">
+          <option value="">Selecione um paciente</option>
+          @for (patient of patients(); track patient.id) {
+            <option [value]="patient.id">{{ patient.full_name }}</option>
+          }
+        </select>
         <span class="field-error" *ngIf="patientId?.errors?.['required'] && patientId?.touched">Paciente é obrigatório</span>
       </div>
 
-      <div class="field" [class.field--error]="diagnosis?.invalid && diagnosis?.touched">
-        <label for="diagnosis">Diagnóstico *</label>
-        <textarea id="diagnosis" formControlName="diagnosis" placeholder="Descreva o diagnóstico..." rows="4"></textarea>
-        <span class="field-error" *ngIf="diagnosis?.errors?.['required'] && diagnosis?.touched">Diagnóstico é obrigatório</span>
+      <div class="field" [class.field--error]="appointmentId?.invalid && appointmentId?.touched">
+        <label for="appointment_id">Agendamento *</label>
+        @if (loadingAppointments()) {
+          <select disabled>
+            <option>Carregando agendamentos...</option>
+          </select>
+        } @else {
+          <select id="appointment_id" formControlName="appointment_id" [disabled]="!patientId?.value">
+            <option value="">{{ patientId?.value ? 'Selecione um agendamento' : 'Selecione um paciente primeiro' }}</option>
+            @for (appt of appointments(); track appt.id) {
+              <option [value]="appt.id">{{ formatDateTime(appt.scheduled_at) }}</option>
+            }
+          </select>
+        }
+        <span class="field-error" *ngIf="appointmentId?.errors?.['required'] && appointmentId?.touched">Agendamento é obrigatório</span>
       </div>
 
-      <div class="field" [class.field--error]="treatment?.invalid && treatment?.touched">
-        <label for="treatment">Tratamento *</label>
+      <div class="field">
+        <label for="diagnosis">Diagnóstico</label>
+        <textarea id="diagnosis" formControlName="diagnosis" placeholder="Descreva o diagnóstico..." rows="4"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="treatment">Tratamento</label>
         <textarea id="treatment" formControlName="treatment" placeholder="Descreva o tratamento prescrito..." rows="4"></textarea>
-        <span class="field-error" *ngIf="treatment?.errors?.['required'] && treatment?.touched">Tratamento é obrigatório</span>
       </div>
 
       <div class="form-actions">

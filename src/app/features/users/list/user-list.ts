@@ -1,9 +1,16 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { UserService } from '../../../core/services/user.service';
-import { User } from '../../../core/models/user.model';
+import { UserWithProfile } from '../../../core/models/user.model';
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Admin',
+  dentist: 'Dentista',
+  secretary: 'Secretária',
+  patient: 'Paciente',
+};
 
 @Component({
   selector: 'app-user-list',
@@ -14,10 +21,11 @@ import { User } from '../../../core/models/user.model';
 })
 export class UserListComponent implements OnInit {
   private userService = inject(UserService);
+  private router = inject(Router);
   private fb = inject(FormBuilder);
 
-  users = signal<User[]>([]);
-  user = signal<User | null>(null);
+  users = signal<UserWithProfile[]>([]);
+  user = signal<UserWithProfile | null>(null);
   isLoading = signal(false);
   isLoadingList = signal(false);
   errorMessage = signal('');
@@ -61,6 +69,29 @@ export class UserListComponent implements OnInit {
         this.isLoading.set(false);
       },
     });
+  }
+
+  deleteUser(id: string): void {
+    if (!confirm('Tem certeza que deseja remover este usuário?')) return;
+
+    this.userService.delete(id).subscribe({
+      next: () => {
+        this.user.set(null);
+        this.searched.set(false);
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.errorMessage.set(err?.error?.message ?? 'Erro ao remover usuário.');
+      },
+    });
+  }
+
+  editUser(id: string): void {
+    this.router.navigate(['/users', id, 'edit']);
+  }
+
+  roleLabel(role: string | undefined): string {
+    return role ? (ROLE_LABELS[role] ?? role) : '-';
   }
 
   formatDate(date: string): string {

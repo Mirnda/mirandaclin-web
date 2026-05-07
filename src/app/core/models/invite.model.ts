@@ -14,6 +14,5 @@ export interface Invite {
 
 export interface CreateInviteRequest {
   email: string;
-  password: string;
-  role: UserRole;
+  profile_id: string;
 }

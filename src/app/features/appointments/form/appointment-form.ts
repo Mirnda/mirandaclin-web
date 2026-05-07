@@ -4,7 +4,10 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { ClinicService } from '../../../core/services/clinic.service';
+import { UserService } from '../../../core/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Clinic } from '../../../core/models/clinic.model';
+import { UserWithProfile } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-appointment-form',
@@ -18,24 +21,38 @@ export class AppointmentFormComponent implements OnInit {
   private router = inject(Router);
   private appointmentService = inject(AppointmentService);
   private clinicService = inject(ClinicService);
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
 
   form!: FormGroup;
   isLoading = signal(false);
   errorMessage = signal('');
   clinics = signal<Clinic[]>([]);
+  patients = signal<UserWithProfile[]>([]);
+  dentists = signal<UserWithProfile[]>([]);
 
   ngOnInit(): void {
+    const secretaryId = this.authService.jwtPayload()?.sub ?? '';
+
     this.form = this.fb.group({
       clinic_id: ['', Validators.required],
       patient_id: ['', Validators.required],
       dentist_id: ['', Validators.required],
       scheduled_at: ['', Validators.required],
-      secretary_id: [''],
+      secretary_id: [secretaryId],
       notes: [''],
     });
 
     this.clinicService.list().subscribe({
       next: (res) => this.clinics.set(res.data ?? []),
+    });
+
+    this.userService.getAll().subscribe({
+      next: (res) => {
+        const users = res.data ?? [];
+        this.patients.set(users.filter(u => u.role === 'patient'));
+        this.dentists.set(users.filter(u => u.role === 'dentist'));
+      },
     });
   }
 
@@ -54,12 +71,18 @@ export class AppointmentFormComponent implements OnInit {
     this.errorMessage.set('');
 
     const value = this.form.value;
-    const payload = {
-      ...value,
+    const payload: Record<string, unknown> = {
+      clinic_id: value.clinic_id,
+      patient_id: value.patient_id,
+      dentist_id: value.dentist_id,
       scheduled_at: new Date(value.scheduled_at).toISOString(),
+      notes: value.notes,
     };
+    if (value.secretary_id) {
+      payload['secretary_id'] = value.secretary_id;
+    }
 
-    this.appointmentService.create(payload).subscribe({
+    this.appointmentService.create(payload as never).subscribe({
       next: () => this.router.navigate(['/appointments']),
       error: (err) => {
         this.errorMessage.set(err?.error?.message ?? 'Erro ao criar agendamento.');

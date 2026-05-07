@@ -49,6 +49,15 @@
   <!-- ===== LADO DIREITO — FORMULÁRIO ===== -->
   <main class="form-panel">
 
+    @if (notification()) {
+      <div class="notification-toast"
+        [class.notification-toast--success]="notification()?.type === 'success'"
+        [class.notification-toast--error]="notification()?.type === 'error'">
+        <span>{{ notification()?.text }}</span>
+        <button type="button" class="notification-close" (click)="dismissNotification()">✕</button>
+      </div>
+    }
+
     <div class="form-container">
       <div class="form-header">
         <h1 class="form-title">Bem-vindo de volta</h1>

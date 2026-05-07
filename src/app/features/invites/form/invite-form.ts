@@ -1,8 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { InviteService } from '../../../core/services/invite.service';
+import { PatientService } from '../../../core/services/patient.service';
+import { Profile } from '../../../core/models/profile.model';
 
 @Component({
   selector: 'app-invite-form',
@@ -13,27 +15,46 @@ import { InviteService } from '../../../core/services/invite.service';
 })
 export class InviteFormComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   private inviteService = inject(InviteService);
+  private patientService = inject(PatientService);
 
   form!: FormGroup;
+  profiles = signal<Profile[]>([]);
+  isLoadingProfiles = signal(true);
   isLoading = signal(false);
-  showPassword = false;
   errorMessage = signal('');
   successMessage = signal('');
 
   ngOnInit(): void {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      role: ['', Validators.required],
+      profile_id: ['', Validators.required],
+    });
+
+    this.patientService.list().subscribe({
+      next: (res) => {
+        this.profiles.set(res.data ?? []);
+        this.isLoadingProfiles.set(false);
+      },
+      error: () => {
+        this.isLoadingProfiles.set(false);
+      },
     });
   }
 
   get email() { return this.form.get('email'); }
-  get password() { return this.form.get('password'); }
-  get role() { return this.form.get('role'); }
+  get profileId() { return this.form.get('profile_id'); }
 
-  togglePassword(): void { this.showPassword = !this.showPassword; }
+  roleLabel(role: string): string {
+    const labels: Record<string, string> = {
+      admin: 'Admin',
+      dentist: 'Dentista',
+      secretary: 'Secretária',
+      patient: 'Paciente',
+    };
+    return labels[role] ?? role;
+  }
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -46,10 +67,10 @@ export class InviteFormComponent implements OnInit {
     this.successMessage.set('');
 
     this.inviteService.create(this.form.value).subscribe({
-      next: () => {
-        this.successMessage.set(`Convite enviado com sucesso para ${this.form.value.email}!`);
-        this.form.reset();
+      next: (res: any) => {
+        this.successMessage.set(res.message || `Convite enviado com sucesso para ${this.form.value.email}!`);
         this.isLoading.set(false);
+        setTimeout(() => this.router.navigate(['/users']), 2000);
       },
       error: (err) => {
         this.errorMessage.set(err?.error?.message ?? 'Erro ao enviar convite.');

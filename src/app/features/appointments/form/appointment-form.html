@@ -26,14 +26,24 @@
       </div>
 
       <div class="field" [class.field--error]="patientId?.invalid && patientId?.touched">
-        <label for="patient_id">ID do paciente *</label>
-        <input id="patient_id" type="text" formControlName="patient_id" placeholder="UUID do paciente"/>
+        <label for="patient_id">Paciente *</label>
+        <select id="patient_id" formControlName="patient_id">
+          <option value="">Selecione um paciente</option>
+          @for (patient of patients(); track patient.id) {
+            <option [value]="patient.id">{{ patient.full_name }}</option>
+          }
+        </select>
         <span class="field-error" *ngIf="patientId?.errors?.['required'] && patientId?.touched">Paciente é obrigatório</span>
       </div>
 
       <div class="field" [class.field--error]="dentistId?.invalid && dentistId?.touched">
-        <label for="dentist_id">ID do dentista *</label>
-        <input id="dentist_id" type="text" formControlName="dentist_id" placeholder="UUID do dentista"/>
+        <label for="dentist_id">Dentista *</label>
+        <select id="dentist_id" formControlName="dentist_id">
+          <option value="">Selecione um dentista</option>
+          @for (dentist of dentists(); track dentist.id) {
+            <option [value]="dentist.id">{{ dentist.full_name }}</option>
+          }
+        </select>
         <span class="field-error" *ngIf="dentistId?.errors?.['required'] && dentistId?.touched">Dentista é obrigatório</span>
       </div>
 
@@ -44,13 +54,8 @@
       </div>
 
       <div class="field">
-        <label for="secretary_id">ID da secretária</label>
-        <input id="secretary_id" type="text" formControlName="secretary_id" placeholder="UUID da secretária (opcional)"/>
-      </div>
-
-      <div class="field">
         <label for="notes">Observações</label>
-        <textarea id="notes" formControlName="notes" placeholder="Observações sobre o agendamento" rows="3"></textarea>
+        <textarea id="notes" formControlName="notes" placeholder="Observações sobre o agendamento" rows="4"></textarea>
       </div>
 
       <div class="form-actions">

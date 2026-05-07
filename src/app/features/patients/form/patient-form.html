@@ -1,0 +1,78 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ isEditMode() ? 'Editar paciente' : 'Novo paciente' }}</h1>
+      <p class="page-subtitle">{{ isEditMode() ? 'Atualize os dados do paciente' : 'Cadastre um paciente na clínica' }}</p>
+    </div>
+    <a routerLink="/patients" class="btn-back">← Voltar</a>
+  </div>
+
+  <div class="form-card">
+    @if (errorMessage()) {
+      <div class="error-banner">⚠ {{ errorMessage() }}</div>
+    }
+
+    @if (isLoadingData()) {
+      <div class="loading-row">
+        <span class="spinner"></span>
+        <span>Carregando dados...</span>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <div class="field" [class.field--error]="fullName?.invalid && fullName?.touched">
+          <label for="full_name">Nome completo *</label>
+          <input id="full_name" type="text" formControlName="full_name" placeholder="Maria Souza"/>
+          <span class="field-error" *ngIf="fullName?.errors?.['required'] && fullName?.touched">Nome é obrigatório</span>
+          <span class="field-error" *ngIf="fullName?.errors?.['minlength'] && fullName?.touched">Mínimo 3 caracteres</span>
+        </div>
+
+        <div class="fields-row">
+          <div class="field">
+            <label for="phone">Telefone</label>
+            <input id="phone" type="tel" formControlName="phone" placeholder="(11) 99999-9999"/>
+          </div>
+          <div class="field">
+            <label for="document">CPF / Documento</label>
+            <input id="document" type="text" formControlName="document" placeholder="000.000.000-00"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="birth_date">Data de nascimento</label>
+          <input id="birth_date" type="date" formControlName="birth_date"/>
+        </div>
+
+        <div class="field checkbox-field">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="has_whatsapp"/>
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Possui WhatsApp</span>
+          </label>
+        </div>
+
+        <div class="section-divider">Contato de emergência</div>
+
+        <div class="fields-row">
+          <div class="field">
+            <label for="emergency_contact_name">Nome do contato</label>
+            <input id="emergency_contact_name" type="text" formControlName="emergency_contact_name" placeholder="Nome"/>
+          </div>
+          <div class="field">
+            <label for="emergency_contact_phone">Telefone do contato</label>
+            <input id="emergency_contact_phone" type="tel" formControlName="emergency_contact_phone" placeholder="(11) 99999-9999"/>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/patients" class="btn-secondary">Cancelar</a>
+          <button type="submit" class="btn-primary" [disabled]="isLoading()">
+            <span *ngIf="!isLoading()">{{ isEditMode() ? 'Salvar alterações' : 'Cadastrar paciente' }}</span>
+            <span *ngIf="isLoading()" class="spinner"></span>
+          </button>
+        </div>
+
+      </form>
+    }
+  </div>
+</div>
