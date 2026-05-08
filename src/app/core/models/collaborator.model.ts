@@ -69,4 +69,14 @@ export interface UpdateProfileRequest {
   birth_date?: string;
   emergency_contact_name?: string;
   emergency_contact_phone?: string;
+  address?: {
+    postal_code?: string;
+    street?: string;
+    number?: string;
+    complement?: string;
+    neighborhood?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+  };
 }

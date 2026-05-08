@@ -69,6 +69,58 @@
         </div>
       </div>
 
+      @if (isEditMode()) {
+        <div class="section-title section-title--mt">Endereço</div>
+
+        <div formGroupName="address">
+          <div class="fields-row fields-row--cep">
+            <div class="field">
+              <label for="postal_code">CEP</label>
+              <div class="cep-input-wrap">
+                <input id="postal_code" type="text" formControlName="postal_code" placeholder="00000-000" maxlength="9" (blur)="lookupCep()" />
+                @if (isLoadingCep()) {
+                  <span class="cep-spinner"></span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="fields-row">
+            <div class="field">
+              <label for="street">Rua</label>
+              <input id="street" type="text" formControlName="street" placeholder="Nome da rua" />
+            </div>
+            <div class="field field--small">
+              <label for="number">Número</label>
+              <input id="number" type="text" formControlName="number" placeholder="Nº" />
+            </div>
+          </div>
+
+          <div class="fields-row">
+            <div class="field">
+              <label for="neighborhood">Bairro</label>
+              <input id="neighborhood" type="text" formControlName="neighborhood" placeholder="Bairro" />
+            </div>
+            <div class="field">
+              <label for="complement">Complemento</label>
+              <input id="complement" type="text" formControlName="complement" placeholder="Apto, sala..." />
+            </div>
+          </div>
+
+          <div class="fields-row">
+            <div class="field">
+              <label for="city">Cidade</label>
+              <input id="city" type="text" formControlName="city" placeholder="Cidade" />
+            </div>
+            <div class="field field--small">
+              <label for="state">Estado (UF)</label>
+              <input id="state" type="text" formControlName="state" placeholder="SP" maxlength="2" />
+            </div>
+          </div>
+
+        </div>
+      }
+
       @if (!isEditMode()) {
       <div class="section-title section-title--mt">Vínculo com clínica (opcional)</div>
 

@@ -2,10 +2,12 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { CollaboratorService } from '../../../core/services/collaborator.service';
 import { ClinicService } from '../../../core/services/clinic.service';
 import { Clinic } from '../../../core/models/clinic.model';
 import { CreateCollaboratorRequest, UpdateProfileRequest, ShiftPerDay } from '../../../core/models/collaborator.model';
+import { environment } from '../../../../environments/environment';
 
 interface DayRow {
   week_day: string;
@@ -36,12 +38,14 @@ export class CollaboratorFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private http = inject(HttpClient);
   private collaboratorService = inject(CollaboratorService);
   private clinicService = inject(ClinicService);
 
   form!: FormGroup;
   isLoading = signal(false);
   isLoadingData = signal(false);
+  isLoadingCep = signal(false);
   errorMessage = signal('');
   clinics = signal<Clinic[]>([]);
   dayRows = signal<DayRow[]>(ALL_DAYS.map(d => ({ ...d })));
@@ -64,6 +68,16 @@ export class CollaboratorFormComponent implements OnInit {
       emergency_contact_phone: [''],
       clinic_id: [''],
       slot_duration_minutes: [30],
+      address: this.fb.group({
+        postal_code: [''],
+        street: [''],
+        number: [''],
+        complement: [''],
+        neighborhood: [''],
+        city: [''],
+        state: [''],
+        country: ['Brasil'],
+      }),
     });
 
     if (id) {
@@ -81,6 +95,16 @@ export class CollaboratorFormComponent implements OnInit {
               birth_date: p.birth_date ? p.birth_date.substring(0, 10) : '',
               emergency_contact_name: p.emergency_contact_name,
               emergency_contact_phone: p.emergency_contact_phone,
+              address: {
+                postal_code: p.address?.postal_code ?? '',
+                street: p.address?.street ?? '',
+                number: p.address?.number ?? '',
+                complement: p.address?.complement ?? '',
+                neighborhood: p.address?.neighborhood ?? '',
+                city: p.address?.city ?? '',
+                state: p.address?.state ?? '',
+                country: p.address?.country ?? '',
+              },
             });
           }
           this.isLoadingData.set(false);
@@ -99,6 +123,32 @@ export class CollaboratorFormComponent implements OnInit {
 
   get fullName() { return this.form.get('full_name'); }
   get role() { return this.form.get('role'); }
+  get addressGroup() { return this.form.get('address') as FormGroup; }
+
+  lookupCep(): void {
+    const cep = this.addressGroup.get('postal_code')?.value?.replace(/\D/g, '');
+    if (!cep || cep.length < 8) return;
+
+    this.isLoadingCep.set(true);
+    this.http.get<{ data: { street: string; neighborhood: string; city: string; state: string; complement: string } }>(
+      `${environment.apiUrl}/v1/api/cep/${cep}`
+    ).subscribe({
+      next: (res) => {
+        const addr = res.data;
+        if (addr) {
+          this.addressGroup.patchValue({
+            street: addr.street ?? '',
+            neighborhood: addr.neighborhood ?? '',
+            city: addr.city ?? '',
+            state: addr.state ?? '',
+            complement: addr.complement ?? '',
+          });
+        }
+        this.isLoadingCep.set(false);
+      },
+      error: () => this.isLoadingCep.set(false),
+    });
+  }
 
   toggleDay(index: number): void {
     this.dayRows.update(rows => {
@@ -139,6 +189,11 @@ export class CollaboratorFormComponent implements OnInit {
       if (value.birth_date) payload.birth_date = `${value.birth_date}T00:00:00Z`;
       if (value.emergency_contact_name) payload.emergency_contact_name = value.emergency_contact_name;
       if (value.emergency_contact_phone) payload.emergency_contact_phone = value.emergency_contact_phone;
+
+      const addr = value.address;
+      if (addr && Object.values(addr).some((v: unknown) => !!v)) {
+        payload.address = addr;
+      }
 
       this.collaboratorService.updateProfile(id, payload).subscribe({
         next: () => this.router.navigate(['/collaborators']),
