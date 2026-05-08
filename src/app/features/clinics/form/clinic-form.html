@@ -53,19 +53,13 @@
       </div>
 
       <div formGroupName="address">
-        <div class="fields-row fields-row--3-1">
-          <div class="field">
-            <label for="postal_code">CEP</label>
-            <input id="postal_code" type="text" formControlName="postal_code" placeholder="01310-100" maxlength="9"
-              (input)="formatCep($event)" (blur)="lookupCep()" />
-            @if (isCepLoading()) {
-            <span class="field-hint">Buscando endereço...</span>
-            }
-          </div>
-          <div class="field">
-            <label for="country">País</label>
-            <input id="country" type="text" formControlName="country" placeholder="Brasil" />
-          </div>
+        <div class="field" style="max-width: 200px;">
+          <label for="postal_code">CEP</label>
+          <input id="postal_code" type="text" formControlName="postal_code" placeholder="01310-100" maxlength="9"
+            (input)="formatCep($event)" (blur)="lookupCep()" />
+          @if (isCepLoading()) {
+          <span class="field-hint">Buscando endereço...</span>
+          }
         </div>
 
         <div class="fields-row fields-row--3-1">

@@ -54,7 +54,7 @@ export class ClinicFormComponent implements OnInit {
         neighborhood: [''],
         city: ['', Validators.required],
         state: ['', Validators.required],
-        country: [''],
+        country: ['Brasil'],
         postal_code: [''],
       }),
     });
