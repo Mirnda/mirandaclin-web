@@ -1,0 +1,133 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ isEditMode() ? 'Editar colaborador' : 'Novo colaborador' }}</h1>
+      <p class="page-subtitle">{{ isEditMode() ? 'Atualize os dados do colaborador' : 'Cadastre um dentista ou secretária' }}</p>
+    </div>
+    <a routerLink="/collaborators" class="btn-back">← Voltar</a>
+  </div>
+
+  <div class="form-card">
+    @if (errorMessage()) {
+      <div class="error-banner">⚠ {{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="section-title">Dados pessoais</div>
+
+      <div class="field" [class.field--error]="fullName?.invalid && fullName?.touched">
+        <label for="full_name">Nome completo *</label>
+        <input id="full_name" type="text" formControlName="full_name" placeholder="Nome do colaborador" />
+        <span class="field-error" *ngIf="fullName?.errors?.['required'] && fullName?.touched">Nome é obrigatório</span>
+        <span class="field-error" *ngIf="fullName?.errors?.['minlength'] && fullName?.touched">Mínimo 3 caracteres</span>
+      </div>
+
+      <div class="field" [class.field--error]="role?.invalid && role?.touched">
+        <label for="role">Papel *</label>
+        <select id="role" formControlName="role">
+          <option value="">Selecione um papel</option>
+          <option value="dentist">Dentista</option>
+          <option value="secretary">Secretária</option>
+        </select>
+        <span class="field-error" *ngIf="role?.errors?.['required'] && role?.touched">Papel é obrigatório</span>
+      </div>
+
+      <div class="fields-row">
+        <div class="field">
+          <label for="phone">Telefone</label>
+          <input id="phone" type="text" formControlName="phone" placeholder="(11) 99999-9999" />
+        </div>
+        <div class="field">
+          <label for="document">Documento (CPF)</label>
+          <input id="document" type="text" formControlName="document" placeholder="000.000.000-00" />
+        </div>
+      </div>
+
+      <div class="fields-row">
+        <div class="field">
+          <label for="birth_date">Data de nascimento</label>
+          <input id="birth_date" type="date" formControlName="birth_date" />
+        </div>
+        <div class="field field--checkbox">
+          <label>WhatsApp</label>
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="has_whatsapp" />
+            <span>Tem WhatsApp</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="fields-row">
+        <div class="field">
+          <label for="emergency_contact_name">Contato de emergência</label>
+          <input id="emergency_contact_name" type="text" formControlName="emergency_contact_name" placeholder="Nome do contato" />
+        </div>
+        <div class="field">
+          <label for="emergency_contact_phone">Telefone de emergência</label>
+          <input id="emergency_contact_phone" type="text" formControlName="emergency_contact_phone" placeholder="(11) 99999-9999" />
+        </div>
+      </div>
+
+      @if (!isEditMode()) {
+      <div class="section-title section-title--mt">Vínculo com clínica (opcional)</div>
+
+      <div class="field">
+        <label for="clinic_id">Clínica</label>
+        <select id="clinic_id" formControlName="clinic_id">
+          <option value="">Nenhuma</option>
+          @for (clinic of clinics(); track clinic.id) {
+            <option [value]="clinic.id">{{ clinic.name }}</option>
+          }
+        </select>
+      </div>
+
+      @if (form.get('clinic_id')?.value) {
+        <div class="field">
+          <label for="slot_duration_minutes">Duração do atendimento (minutos)</label>
+          <input id="slot_duration_minutes" type="number" formControlName="slot_duration_minutes" min="15" max="120" step="15" />
+        </div>
+
+        <div class="field">
+          <label>Dias de trabalho</label>
+          <div class="days-grid">
+            @for (day of dayRows(); track day.week_day; let i = $index) {
+              <button type="button" class="day-btn" [class.day-btn--active]="day.selected" (click)="toggleDay(i)">
+                {{ day.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        @for (day of dayRows(); track day.week_day; let i = $index) {
+          @if (day.selected) {
+            <div class="day-time-row">
+              <span class="day-time-label">{{ day.label }}</span>
+              <div class="day-time-inputs">
+                <div class="field field--inline">
+                  <label>Início</label>
+                  <input type="time" [value]="day.start_time" (change)="updateDayTime(i, 'start_time', $any($event.target).value)" />
+                </div>
+                <div class="field field--inline">
+                  <label>Fim</label>
+                  <input type="time" [value]="day.end_time" (change)="updateDayTime(i, 'end_time', $any($event.target).value)" />
+                </div>
+              </div>
+            </div>
+          }
+        }
+      }
+
+      } <!-- end @if (!isEditMode()) -->
+
+      <div class="form-actions">
+        <a routerLink="/collaborators" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          <span *ngIf="!isLoading()">{{ isEditMode() ? 'Salvar alterações' : 'Criar colaborador' }}</span>
+          <span *ngIf="isLoading()" class="spinner"></span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

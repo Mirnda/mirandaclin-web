@@ -73,6 +73,14 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'collaborators',
+        children: [
+          { path: '', loadComponent: () => import('./features/collaborators/list/collaborator-list').then(m => m.CollaboratorListComponent) },
+          { path: 'new', loadComponent: () => import('./features/collaborators/form/collaborator-form').then(m => m.CollaboratorFormComponent) },
+          { path: ':id/edit', loadComponent: () => import('./features/collaborators/form/collaborator-form').then(m => m.CollaboratorFormComponent) },
+        ],
+      },
+      {
         path: 'invites',
         children: [
           { path: 'new', loadComponent: () => import('./features/invites/form/invite-form').then(m => m.InviteFormComponent) },

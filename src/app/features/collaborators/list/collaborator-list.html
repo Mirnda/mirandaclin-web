@@ -1,0 +1,70 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Colaboradores</h1>
+      <p class="page-subtitle">Dentistas e secretárias da clínica</p>
+    </div>
+    <a routerLink="/collaborators/new" class="btn-primary">+ Novo colaborador</a>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">⚠ {{ errorMessage() }}</div>
+  }
+
+  <div class="table-card">
+    @if (isLoading()) {
+      <div class="table-empty">
+        <span class="spinner spinner--dark"></span>
+      </div>
+    } @else if (collaborators().length === 0) {
+      <div class="table-empty">
+        <p>Nenhum colaborador cadastrado.</p>
+      </div>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Acesso</th>
+            <th>Clínicas</th>
+            <th>Endereço</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of collaborators(); track c.profile.id) {
+            <tr>
+              <td>
+                <div class="collab-cell">
+                  <div class="cell-avatar">{{ c.profile.full_name.charAt(0).toUpperCase() }}</div>
+                  <span class="cell-name">{{ c.profile.full_name }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="role-badge role-badge--{{ c.profile.role }}">{{ roleLabel(c.profile.role) }}</span>
+              </td>
+              <td class="cell-muted">{{ clinicNames(c) }}</td>
+              <td class="cell-muted">{{ formatAddress(c) }}</td>
+              <td class="cell-actions">
+                <button class="btn-icon btn-icon--edit" (click)="editCollaborator(c.profile.id)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button class="btn-icon btn-icon--delete" (click)="deleteCollaborator(c.profile.id, c.profile.full_name)" title="Remover">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                    <path d="M10 11v6M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
