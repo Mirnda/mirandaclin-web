@@ -4,10 +4,10 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { ClinicService } from '../../../core/services/clinic.service';
-import { UserService } from '../../../core/services/user.service';
+import { PatientService } from '../../../core/services/patient.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Clinic } from '../../../core/models/clinic.model';
-import { UserWithProfile } from '../../../core/models/user.model';
+import { Profile } from '../../../core/models/profile.model';
 
 @Component({
   selector: 'app-appointment-form',
@@ -21,15 +21,15 @@ export class AppointmentFormComponent implements OnInit {
   private router = inject(Router);
   private appointmentService = inject(AppointmentService);
   private clinicService = inject(ClinicService);
-  private userService = inject(UserService);
+  private patientService = inject(PatientService);
   private authService = inject(AuthService);
 
   form!: FormGroup;
   isLoading = signal(false);
   errorMessage = signal('');
   clinics = signal<Clinic[]>([]);
-  patients = signal<UserWithProfile[]>([]);
-  dentists = signal<UserWithProfile[]>([]);
+  patients = signal<Profile[]>([]);
+  dentists = signal<Profile[]>([]);
 
   ngOnInit(): void {
     const secretaryId = this.authService.jwtPayload()?.sub ?? '';
@@ -47,12 +47,12 @@ export class AppointmentFormComponent implements OnInit {
       next: (res) => this.clinics.set(res.data ?? []),
     });
 
-    this.userService.getAll().subscribe({
-      next: (res) => {
-        const users = res.data ?? [];
-        this.patients.set(users.filter(u => u.role === 'patient'));
-        this.dentists.set(users.filter(u => u.role === 'dentist'));
-      },
+    this.patientService.list().subscribe({
+      next: (res) => this.patients.set(res.data ?? []),
+    });
+
+    this.patientService.listDentists().subscribe({
+      next: (res) => this.dentists.set(res.data ?? []),
     });
   }
 

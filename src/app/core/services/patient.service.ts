@@ -19,6 +19,10 @@ export class PatientService {
     return this.http.get<ApiResponse<Profile[]>>(this.baseList);
   }
 
+  listDentists(): Observable<ApiResponse<Profile[]>> {
+    return this.http.get<ApiResponse<Profile[]>>(`${environment.apiUrl}/v1/api/profiles/role/dentist`);
+  }
+
   getById(id: string): Observable<ApiResponse<Profile>> {
     return this.http.get<ApiResponse<Profile>>(`${this.base}/${id}`);
   }
@@ -31,7 +35,4 @@ export class PatientService {
     return this.http.delete<ApiResponse<unknown>>(`${this.base}/${id}`);
   }
 
-  search(q: string): Observable<ApiResponse<Profile[]>> {
-    return this.http.get<ApiResponse<Profile[]>>(`${this.base}/search`, { params: { q } });
-  }
 }
