@@ -77,7 +77,11 @@ export class PatientFormComponent implements OnInit {
     this.errorMessage.set('');
 
     const value = { ...this.form.value };
-    if (!value.birth_date) delete value.birth_date;
+    if (!value.birth_date) {
+      delete value.birth_date;
+    } else {
+      value.birth_date = `${value.birth_date}T00:00:00Z`;
+    }
 
     const id = this.editId();
     if (id) {

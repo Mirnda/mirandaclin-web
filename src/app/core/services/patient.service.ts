@@ -8,14 +8,15 @@ import { Profile, CreatePatientRequest, UpdatePatientRequest } from '../models/p
 @Injectable({ providedIn: 'root' })
 export class PatientService {
   private http = inject(HttpClient);
-  private readonly base = `${environment.apiUrl}/v1/api/patients`;
+  private readonly base = `${environment.apiUrl}/v1/api/profiles`;
+  private readonly baseList = `${environment.apiUrl}/v1/api/profiles/role/patient`;
 
   create(data: CreatePatientRequest): Observable<ApiResponse<Profile>> {
     return this.http.post<ApiResponse<Profile>>(this.base, data);
   }
 
   list(): Observable<ApiResponse<Profile[]>> {
-    return this.http.get<ApiResponse<Profile[]>>(this.base);
+    return this.http.get<ApiResponse<Profile[]>>(this.baseList);
   }
 
   getById(id: string): Observable<ApiResponse<Profile>> {
