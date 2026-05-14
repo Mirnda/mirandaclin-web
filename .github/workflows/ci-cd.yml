@@ -216,7 +216,7 @@ jobs:
             docker rm   "${{ steps.docker.outputs.image_name }}" 2>/dev/null || true
             docker run -d \
               --name "${{ steps.docker.outputs.image_name }}" \
-              --restart always \
+              --restart unless-stopped \
               -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} \
               -e APP_PORT=${{ secrets.APP_PORT }} \
               "${{ steps.docker.outputs.tag_name }}"
