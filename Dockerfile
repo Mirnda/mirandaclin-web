@@ -9,14 +9,12 @@ RUN npm ci
 COPY . .
 RUN npx ng build --configuration=production
 
-# ── Production stage ──────────────────────────────────────────────────────────
-FROM nginx:alpine
+# ── Artifacts stage ───────────────────────────────────────────────────────────
+# Nginx runs on the VM host; this stage only holds the built files so the
+# deployment pipeline can copy them out with:
+#   docker create --name tmp <image> && docker cp tmp:/app/dist/. <nginx-root> && docker rm tmp
+FROM alpine:3
 
-COPY --from=builder /app/dist/frontodonto/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/frontodonto/browser /app/dist
 
-ENV APP_PORT=4200
-
-EXPOSE 80
-EXPOSE 4200
-
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--port", ${APP_PORT}, "--poll", "2000"]
+CMD ["sh", "-c", "echo 'dist files ready at /app/dist'"]
