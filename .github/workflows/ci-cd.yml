@@ -182,7 +182,7 @@ jobs:
           host: ${{ steps.ip.outputs.ip }}
           username: ${{ secrets.APP_USER }}
           key: ${{ secrets.APP_KEY }}
-          source: ${{ steps.docker.outputs.docker_file_name }}
+          source: ${{ steps.docker.outputs.file_name }}
           target: "/home/${{ secrets.APP_USER }}/app/"
 
       - name: Configure and start service
@@ -206,7 +206,7 @@ jobs:
             fi
 
             APP_DIR="/home/${{ secrets.APP_USER }}/app"
-            DOCKER_FILE="$APP_DIR/${{ steps.docker.outputs.docker_file_name }}"
+            DOCKER_FILE="$APP_DIR/${{ steps.docker.outputs.file_name }}"
 
             docker load -i "$DOCKER_FILE"
             docker stop "${{ steps.docker.outputs.image_name }}" 2>/dev/null || true
@@ -216,7 +216,7 @@ jobs:
               --restart always \
               -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} \
               -e APP_PORT=${{ secrets.APP_PORT }} \
-              "${{ steps.docker.outputs.docker_tag_name }}"
+              "${{ steps.docker.outputs.tag_name }}"
             docker image prune -f
 
             # Nginx: instala se ausente
