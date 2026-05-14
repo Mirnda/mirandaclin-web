@@ -33,9 +33,9 @@ jobs:
         run: npm run build -- --configuration=production
 
       - name: Run tests
-        run: npm test -- --run
         env:
           CI: 'true'
+        run: npm test
 
   # ─────────────────────────────────────────────────────────────────────────────
   # JOB 2 – Deploy to EC2  (main branch only)
