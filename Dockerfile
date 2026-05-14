@@ -8,14 +8,11 @@ RUN npm ci
 
 COPY . .
 RUN npx ng build --configuration=production
-# RUN npm run build -- --configuration=production
 
 # ── Production stage ──────────────────────────────────────────────────────────
 FROM nginx:alpine
 
 COPY --from=builder /app/dist/frontodonto/browser /usr/share/nginx/html
-# nginx.conf uses ${APP_PORT} — rendered at startup via envsubst
-COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 
 ENV APP_PORT=4200
 
