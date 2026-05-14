@@ -41,6 +41,8 @@ jobs:
   deploy:
     name: Deploy to EC2
     needs: ci
+    environment:
+      name: ${{ (github.ref_name == 'main' || github.ref_name == 'master') && 'prod' || 'stg' }}
     runs-on: ubuntu-latest
 
     steps:
