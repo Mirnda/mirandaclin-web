@@ -143,10 +143,10 @@ jobs:
         id: create
         run: |
           INSTANCE_ID=$(aws ec2 run-instances \
-            --image-id "${{ secrets.EC2_IMAGE_ID }}" \
-            --instance-type "${{ secrets.EC2_INSTANCE_TYPE }}" \
-            --key-name "${{ secrets.EC2_ACCESS_KEY_NAME }}" \
-            --security-group-ids "${{ secrets.EC2_SG_ID }}" \
+            --image-id "${{ secrets.AWS_EC2_IMG_ID }}" \
+            --instance-type "${{ secrets.AWS_EC2_INSTANCE_TYPE }}" \
+            --key-name "${{ secrets.AWS_EC2_ACCESS_KEY_NAME }}" \
+            --security-group-ids "${{ secrets.AWS_EC2_SG_ID }}" \
             --user-data file:///tmp/userdata.sh \
             --tag-specifications \
             "ResourceType=instance,Tags=[{Key=Name,Value=${{ secrets.APP_NAME }}-${{ steps.branch.outputs.branch }}},{Key=Branch,Value=${{ steps.branch.outputs.branch }}},{Key=Service,Value=${{ secrets.APP_NAME }}},{Key=ExpiresAt,Value=$(date -d '+3 hours' +%Y-%m-%dT%H:%M:%SZ)},{Key=Environment,Value=${{ secrets.APP_ENV }}}]" \
